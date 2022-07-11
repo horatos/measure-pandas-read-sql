@@ -12,11 +12,12 @@ def check_connection():
 
 
 @task
-def init(c):
+def init(c, nrows):
     check_connection()
 
-    initialize_mysql(1000)
-    initialize_postgres(1000)
+    nrows = int(nrows)
+    initialize_mysql(nrows)
+    initialize_postgres(nrows)
 
 
 if __name__ == '__main__':
