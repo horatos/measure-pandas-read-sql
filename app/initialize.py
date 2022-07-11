@@ -5,7 +5,7 @@ import string
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-from db import create_mysql_engine
+from db import create_mysql_engine, create_postgres_engine
 
 
 logging.basicConfig(format='[%(levelname)s] %(funcName)s: %(message)s')
@@ -17,7 +17,7 @@ Base = declarative_base()
 
 
 class User(Base):
-    __tablename__ = "user"
+    __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
     name = Column(String(240))
@@ -29,16 +29,15 @@ class User(Base):
 def random_string(length):
     return ''.join((random.choice(string.printable) for _ in range(length)))
 
-def initialize_mysql(nrows):
-    engine = create_mysql_engine()
+def initialize_table(engine, nrows: int) -> int:
     Session = sessionmaker(engine)
 
     Base.metadata.create_all(engine)
 
     with Session() as session:
-        for i in range(nrows+1):
+        for i in range(nrows):
             name = random_string(240)
-            user = User(id=i, name=name)
+            user = User(name=name)
             session.merge(user)
         session.commit()
 
@@ -46,4 +45,16 @@ def initialize_mysql(nrows):
         added_rows = session.query(User).count()
         session.commit()
 
+    return added_rows
+
+
+def initialize_mysql(nrows: int):
+    engine = create_mysql_engine()
+    added_rows = initialize_table(engine, nrows)
+    logger.info("Added rows count = %s", added_rows)
+
+
+def initialize_postgres(nrows: int):
+    engine = create_postgres_engine()
+    added_rows = initialize_table(engine, nrows)
     logger.info("Added rows count = %s", added_rows)
