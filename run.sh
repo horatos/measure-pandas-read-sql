@@ -14,7 +14,8 @@ function die () {
 	exit 1
 }
 
-docker compose up -d --build
+docker compose build
+docker compose up -d mysql postgres
 
 $APP init --nrows $NROWS || die
 $APP exp1 --db mysql || die
