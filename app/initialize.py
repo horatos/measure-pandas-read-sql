@@ -8,9 +8,8 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 from db import create_mysql_engine, create_postgres_engine
 
 
-logging.basicConfig(format='[%(levelname)s] %(funcName)s: %(message)s')
+logging.basicConfig(format='[%(levelname)s] %(funcName)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 Base = declarative_base()
@@ -38,7 +37,7 @@ def initialize_table(engine, nrows: int) -> int:
         for i in range(nrows):
             name = random_string(240)
             user = User(name=name)
-            session.merge(user)
+            session.add(user)
         session.commit()
 
     with Session() as session:
@@ -49,12 +48,14 @@ def initialize_table(engine, nrows: int) -> int:
 
 
 def initialize_mysql(nrows: int):
+    logger.info("Start adding rows")
     engine = create_mysql_engine()
     added_rows = initialize_table(engine, nrows)
     logger.info("Added rows count = %s", added_rows)
 
 
 def initialize_postgres(nrows: int):
+    logger.info("Start adding rows")
     engine = create_postgres_engine()
     added_rows = initialize_table(engine, nrows)
     logger.info("Added rows count = %s", added_rows)
