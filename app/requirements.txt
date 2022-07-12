@@ -5,3 +5,4 @@ psycopg2-binary == 2.9.3
 invoke == 1.7.1
 cryptography == 37.0.4
 tenacity == 8.0.1
+memory-profiler == 0.60.0

@@ -52,7 +52,7 @@ def initialize_mysql(nrows: int) -> int:
 
     engine = create_mysql_engine()
 
-    logger.info("Start adding rows")
+    logger.info("Start adding %s rows", nrows)
     added_rows = initialize_table(engine, nrows)
     logger.info("Added rows count = %s", added_rows)
 
