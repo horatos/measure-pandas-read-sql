@@ -24,8 +24,11 @@ def init(c, nrows):
     logger.info("Done waiting databases initialization")
 
     nrows = int(nrows)
-    initialize_mysql(nrows)
-    initialize_postgres(nrows)
+    mysql_nrows = initialize_mysql(nrows)
+    pg_nrows = initialize_postgres(nrows)
+
+    if mysql_nrows != pg_nrows:
+        raise Exception("MySQL nrows is not equal to PostgreSQL nrows")
 
 
 if __name__ == '__main__':

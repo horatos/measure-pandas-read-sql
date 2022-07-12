@@ -25,7 +25,7 @@ class User(Base):
         return f"User(id={self.id!r},name={self.name!r})"
 
 
-def random_string(length):
+def random_string(length: int) -> str:
     return ''.join((random.choice(string.printable) for _ in range(length)))
 
 def initialize_table(engine, nrows: int) -> int:
@@ -47,15 +47,25 @@ def initialize_table(engine, nrows: int) -> int:
     return added_rows
 
 
-def initialize_mysql(nrows: int):
-    logger.info("Start adding rows")
+def initialize_mysql(nrows: int) -> int:
+    """Initialize MySQL database with random records."""
+
     engine = create_mysql_engine()
-    added_rows = initialize_table(engine, nrows)
-    logger.info("Added rows count = %s", added_rows)
 
-
-def initialize_postgres(nrows: int):
     logger.info("Start adding rows")
-    engine = create_postgres_engine()
     added_rows = initialize_table(engine, nrows)
     logger.info("Added rows count = %s", added_rows)
+
+    return added_rows
+
+
+def initialize_postgres(nrows: int) -> int:
+    """Initialize PostgreSQL database with random records."""
+
+    engine = create_postgres_engine()
+
+    logger.info("Start adding rows")
+    added_rows = initialize_table(engine, nrows)
+    logger.info("Added rows count = %s", added_rows)
+
+    return added_rows
