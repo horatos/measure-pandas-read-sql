@@ -34,10 +34,7 @@ def init(c, nrows):
 
 @task
 def exp1(c, db):
-    logger.info("Experiment#1 for %s", db)
-    engine = create_db_engine(db)
-
-    exec_experiment_1(engine)
+    exec_experiment_1(db)
 
 
 if __name__ == '__main__':
