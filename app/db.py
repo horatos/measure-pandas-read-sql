@@ -1,8 +1,12 @@
 from sqlalchemy import create_engine
 
 
-def create_mysql_engine():
-    return create_engine("mysql+pymysql://root:rootpass@mysql/example")
+def create_mysql8_engine():
+    return create_engine("mysql+pymysql://root:rootpass@mysql8/example")
+
+
+def create_mysql57_engine():
+    return create_engine("mysql+pymysql://root:rootpass@mysql57/example")
 
 
 def create_postgres_engine():
@@ -10,8 +14,10 @@ def create_postgres_engine():
 
 
 def create_db_engine(db: str):
-    if db.lower() == "mysql":
-        return create_mysql_engine()
+    if db.lower() == "mysql8":
+        return create_mysql8_engine()
+    elif db.lower() == "mysql57":
+        return create_mysql57_engine()
     elif db.lower() == "postgres" or db.lower() == "postgresql":
         return create_postgres_engine()
     else:
