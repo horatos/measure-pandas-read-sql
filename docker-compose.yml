@@ -11,6 +11,14 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
       MYSQL_DATABASE: example
+  mysql57:
+    image: mysql:5.7
+    restart: always
+    expose:
+      - 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: example
   postgres:
     image: postgres:14
     restart: always
