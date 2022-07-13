@@ -5,7 +5,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 
 from db import create_mysql_engine, create_postgres_engine, create_db_engine
 from initialize import initialize_mysql, initialize_postgres
-from experiments import exec_experiment_1
+from experiments import *
 
 
 logging.basicConfig(format='[%(levelname)s] %(funcName)s: %(message)s', level=logging.INFO)
@@ -34,10 +34,12 @@ def init(c, nrows):
 
 @task
 def exp1(c, db):
-    logger.info("Experiment#1 for %s", db)
-    engine = create_db_engine(db)
+    exec_experiment_1(db)
 
-    exec_experiment_1(engine)
+
+@task
+def exp2(c, db, chunksize):
+    exec_experiment_2(db, chunksize)
 
 
 if __name__ == '__main__':
