@@ -3,8 +3,8 @@ import logging
 from invoke import task
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from db import create_mysql_engine, create_postgres_engine, create_db_engine
-from initialize import initialize_mysql, initialize_postgres
+from db import create_mysql8_engine, create_postgres_engine, create_db_engine
+from initialize import initialize_mysql8, initialize_postgres
 from experiments import *
 
 
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 @retry(stop=stop_after_attempt(20), wait=wait_fixed(3))
 def check_connection():
-    create_mysql_engine().connect()
+    create_mysql8_engine().connect()
     create_postgres_engine().connect()
 
 
@@ -25,7 +25,7 @@ def init(c, nrows):
     logger.info("Done waiting databases initialization")
 
     nrows = int(nrows)
-    mysql_nrows = initialize_mysql(nrows)
+    mysql_nrows = initialize_mysql8(nrows)
     pg_nrows = initialize_postgres(nrows)
 
     if mysql_nrows != pg_nrows:

@@ -5,7 +5,7 @@ import string
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-from db import create_mysql_engine, create_postgres_engine
+from db import create_mysql8_engine, create_postgres_engine
 
 
 logging.basicConfig(format='[%(levelname)s] %(funcName)s: %(message)s', level=logging.INFO)
@@ -47,10 +47,10 @@ def initialize_table(engine, nrows: int) -> int:
     return added_rows
 
 
-def initialize_mysql(nrows: int) -> int:
+def initialize_mysql8(nrows: int) -> int:
     """Initialize MySQL database with random records."""
 
-    engine = create_mysql_engine()
+    engine = create_mysql8_engine()
 
     logger.info("Start adding %s rows", nrows)
     added_rows = initialize_table(engine, nrows)

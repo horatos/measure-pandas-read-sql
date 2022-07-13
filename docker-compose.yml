@@ -3,7 +3,7 @@ services:
   app:
     build:
       context: app
-  mysql:
+  mysql8:
     image: mysql:8
     restart: always
     expose:
@@ -19,4 +19,3 @@ services:
     environment:
       POSTGRES_PASSWORD: rootpass
       POSTGRES_DB: example
-

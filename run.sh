@@ -24,11 +24,11 @@ function do_exps () {
 }
 
 docker compose build
-docker compose up -d mysql postgres
+docker compose up -d mysql8 postgres
 
 $APP init --nrows $NROWS || die
 
-do_exps "mysql"
+do_exps "mysql8"
 do_exps "postgres"
 
 
