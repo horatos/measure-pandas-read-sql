@@ -45,28 +45,37 @@ RDBMSとPythonプログラムはそれぞれ別のDockerコンテナで実行す
 
 ## 結果
 
-データベースに格納する行数を10万行、chunksizeを1000としたときの実験結果を docs/results-0.txt に保存してある。
+データベースに格納する行数を10万行、chunksizeを1000としたときの実験結果を docs/results-1.txt に保存してある。
 
-実験1のメモリ使用量は`pd.read_sql`のIncrementを採用する。実験記録から使用量はMySQL 8が45.9 MiB、PostgreSQLが68.5 MiBである。
+実験1のメモリ使用量は`pd.read_sql`のIncrementを採用する。
+というのも、この操作ですべての行を読み込むからである。
+実験記録から使用量はMySQL 8が45.9 MiB、MySQL 5.7が46.0 MiB、PostgreSQLが70.9 MiBである。
 
-実験2のメモリ使用量は`pd.read_sql`と`for chunk in it`のIncrementの合計を採用する。実験記録から使用量はMySQL 8が40.6 MiB、PostgreSQLが30.9 MiBである。
+実験2のメモリ使用量は`pd.read_sql`と`for chunk in it`のIncrementの合計を採用する。
+というのも、この2つの操作で行を読み込んでいくからである。
+実験記録から使用量はMySQL 8が40.6 MiB、MySQL 5.7が40.6 MiB、PostgreSQLが30.7 MiBである。
 
-実験3のメモリ使用量は、実験1と同様に、`pd.read_sql`のIncrementを採用する。実験記録から使用量はMySQL 8が43.4 MiB、PostgreSQLが71.4 MiBである。
+実験3のメモリ使用量は、実験1と同様に、`pd.read_sql`のIncrementを採用する。
+実験記録から使用量はMySQL 8が44.1 MiB、MySQL 5.7が43.3 MiB、PostgreSQLが71.4 MiBである。
 
-実験4のメモリ使用量は`pd.read_sql`と`for chunk in it`のIncrementの合計を採用する。実験記録から使用量はMySQL 8が2.5 MiB、PostgreSQLが3.8 MiBである。
+実験4のメモリ使用量は、実験2と同様に、`pd.read_sql`と`for chunk in it`のIncrementの合計を採用する。
+実験記録から使用量はMySQL 8が2.5 MiB、MySQL 5.7が2.4 MiB、PostgreSQLが3.6 MiBである。
 
-|        | MySQL 8  | PostgreSQL |
-|:------:|---------:|-----------:|
-| 実験1  | 45.9 MiB |   68.5 MiB |
-| 実験2  | 40.6 MiB |   30.9 MiB |
-| 実験3  | 43.4 MiB |   71.4 MiB |
-| 実験4  |  2.5 MiB |    3.8 MiB |
+|        | MySQL 8  | MySQL 5.7 | PostgreSQL |
+|:------:|---------:|----------:|-----------:|
+| 実験1  | 45.9 MiB |  46.0 MiB |   70.9 MiB |
+| 実験2  | 40.6 MiB |  40.6 MiB |   30.7 MiB |
+| 実験3  | 44.1 MiB |  43.3 MiB |   71.4 MiB |
+| 実験4  |  2.5 MiB |   2.4 MiB |    3.6 MiB |
 
 ## 議論
 
 予想に反してMySQLでもPostgreSQLでも共にサーバーサイドカーソルが利用できることがわかった。
+pandas-dev/pandas#12265 の報告は2016年になされたものなので、2022年現在はPyMySQLでもサーバーサイドカーソルが利用できるようになったと考えるのがよいだろう。
 
-MySQL 8であることが要因かもしれない。また、PyMySQLが対応しているだけかもしれない。
+いずれの場合でもサーバーサイドカーソルを有効にした上でchunksizeを指定して読み込むことで、消費するメモリの量を大きく減らせることがわかった。
+
+すべての行を一度に読み込む動作になっている実験1と実験3においてPostgreSQLを利用した場合に消費するメモリが約70 MiBと、MySQLのそれに比べ2倍近くになっている。詳細を調べていないのでこの原因はわからない。
 
 ## 参考文献
 
