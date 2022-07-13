@@ -42,3 +42,16 @@ def exec_experiment_3(db: str):
 
     logger.info("Got %s records", len(dataframe))
 
+
+@profile
+def exec_experiment_4(db: str, chunksize: int):
+    logger.info("Execute the experiment#4 with db = %s, chunksize = %s", db, chunksize)
+    total = 0
+    chunksize = int(chunksize)
+
+    conn = create_db_engine(db).connect().execution_options(stream_results=True)
+    it = pd.read_sql("SELECT * FROM users", conn, chunksize=chunksize)
+    for chunk in it:
+        total += len(chunk)
+
+    logger.info("Got %s records", total)
