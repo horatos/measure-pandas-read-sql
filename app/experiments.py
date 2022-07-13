@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 def exec_experiment_1(db: str):
     logger.info("Execute the experiment#1 with db = %s", db)
 
-    engine = create_db_engine(db)
-    dataframe = pd.read_sql("SELECT * FROM users", engine)
+    conn = create_db_engine(db).connect()
+    dataframe = pd.read_sql("SELECT * FROM users", conn)
 
     logger.info("Got %s records", len(dataframe))
 
@@ -25,8 +25,8 @@ def exec_experiment_2(db: str, chunksize: int):
     total = 0
     chunksize = int(chunksize)
 
-    engine = create_db_engine(db)
-    it = pd.read_sql("SELECT * FROM users", engine, chunksize=chunksize)
+    conn = create_db_engine(db).connect()
+    it = pd.read_sql("SELECT * FROM users", conn, chunksize=chunksize)
     for chunk in it:
         total += len(chunk)
 
