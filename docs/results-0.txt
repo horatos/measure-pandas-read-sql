@@ -1,0 +1,218 @@
+#1 [internal] load build definition from Dockerfile
+#1 sha256:c2f2ac51cfc1635c596013c9855da173a3818a170154caae19890f352b6abae8
+#1 transferring dockerfile: 32B done
+#1 DONE 0.0s
+
+#2 [internal] load .dockerignore
+#2 sha256:5ff0849c8ee3daa45c339d2a8dae28af9364f4bb8d2db6e0f13dc65674775558
+#2 transferring context: 2B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.10
+#3 sha256:c787ec5cc33e1cbee663ba2529b5d51f0293f2c277b40d9bd37129383a68d5ac
+#3 DONE 0.8s
+
+#6 [internal] load build context
+#6 sha256:326f51692c8872a5c280f97aff8e7f829f6aeb902b6d6e7080184a45acdc7f1f
+#6 transferring context: 188B done
+#6 DONE 0.0s
+
+#4 [1/5] FROM docker.io/library/python:3.10@sha256:d4685e083565b8d6290e2b19c367a1ad6623129a4968e187c803b12fefb38c0c
+#4 sha256:777e175c3abfb2243123bd3d2f662bfcdc7f7b8a73a141b8ff1bf9b1df79aabc
+#4 resolve docker.io/library/python:3.10@sha256:d4685e083565b8d6290e2b19c367a1ad6623129a4968e187c803b12fefb38c0c 0.0s done
+#4 DONE 0.0s
+
+#8 [4/5] RUN pip install --no-cache-dir -r requirements.txt
+#8 sha256:c52d91651a64cc49d7c3035d618dcbfcacf5f56229c8e559429b58c111c9d605
+#8 CACHED
+
+#5 [2/5] WORKDIR /usr/src/app
+#5 sha256:495bb222b3141b1c79d577574c909f24d8131b5a83248cfc2d783d05a57770e1
+#5 CACHED
+
+#7 [3/5] COPY requirements.txt ./
+#7 sha256:78a0ee74f4190d52c8fa150aae4699deae42dac0d50df19ff0db4c8a26e70a98
+#7 CACHED
+
+#9 [5/5] COPY . .
+#9 sha256:cca02203394cf1b36613cb92c7750dafe763cf4a1980078ca219f5b8ffe3982e
+#9 CACHED
+
+#10 exporting to image
+#10 sha256:e8c613e07b0b7ff33893b694f7759a10d42e180f2b4dc349fb57dc6b71dcab00
+#10 exporting layers done
+#10 writing image sha256:e57ce2fb86de21881e045e6c21aa0f8af05be6aefb22cf7cf9f9d445e916e6f2 done
+#10 naming to docker.io/library/measure-pandas-read-sql_app done
+#10 DONE 0.0s
+Network measure-pandas-read-sql_default  Creating
+Network measure-pandas-read-sql_default  Created
+Container measure-pandas-read-sql-mysql-1  Creating
+Container measure-pandas-read-sql-postgres-1  Creating
+Container measure-pandas-read-sql-mysql-1  Created
+Container measure-pandas-read-sql-postgres-1  Created
+Container measure-pandas-read-sql-mysql-1  Starting
+Container measure-pandas-read-sql-postgres-1  Starting
+Container measure-pandas-read-sql-mysql-1  Started
+Container measure-pandas-read-sql-postgres-1  Started
+[INFO] init: Start waiting databases initialization
+[INFO] init: Done waiting databases initialization
+[INFO] initialize_mysql: Start adding 100000 rows
+[INFO] initialize_mysql: Added rows count = 100000
+[INFO] initialize_postgres: Start adding 100000 rows
+[INFO] initialize_postgres: Added rows count = 100000
+[INFO] exec_experiment_1: Execute the experiment#1 with db = mysql
+[INFO] exec_experiment_1: Got 100000 records
+Filename: /usr/src/app/experiments.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    12     74.8 MiB     74.8 MiB           1   @profile
+    13                                         def exec_experiment_1(db: str):
+    14     74.8 MiB      0.0 MiB           1       logger.info("Execute the experiment#1 with db = %s", db)
+    15                                         
+    16     77.6 MiB      2.8 MiB           1       conn = create_db_engine(db).connect()
+    17    123.6 MiB     45.9 MiB           1       dataframe = pd.read_sql("SELECT * FROM users", conn)
+    18                                         
+    19    123.6 MiB      0.0 MiB           1       logger.info("Got %s records", len(dataframe))
+
+
+[INFO] exec_experiment_2: Execute the experiment#2 with db = mysql, chunksize = 1000
+[INFO] exec_experiment_2: Got 100000 records
+Filename: /usr/src/app/experiments.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    22     74.8 MiB     74.8 MiB           1   @profile
+    23                                         def exec_experiment_2(db: str, chunksize: int):
+    24     74.8 MiB      0.0 MiB           1       logger.info("Execute the experiment#2 with db = %s, chunksize = %s", db, chunksize)
+    25     74.8 MiB      0.0 MiB           1       total = 0
+    26     74.8 MiB      0.0 MiB           1       chunksize = int(chunksize)
+    27                                         
+    28     77.6 MiB      2.8 MiB           1       conn = create_db_engine(db).connect()
+    29    117.6 MiB     40.1 MiB           1       it = pd.read_sql("SELECT * FROM users", conn, chunksize=chunksize)
+    30    118.2 MiB      0.5 MiB         101       for chunk in it:
+    31    118.2 MiB      0.0 MiB         100           total += len(chunk)
+    32                                         
+    33    118.2 MiB      0.0 MiB           1       logger.info("Got %s records", total)
+
+
+[INFO] exec_experiment_3: Execute the experiment#3 with db = mysql
+[INFO] exec_experiment_3: Got 100000 records
+Filename: /usr/src/app/experiments.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    36     74.7 MiB     74.7 MiB           1   @profile
+    37                                         def exec_experiment_3(db: str):
+    38     74.7 MiB      0.0 MiB           1       logger.info("Execute the experiment#3 with db = %s", db)
+    39                                         
+    40     77.4 MiB      2.8 MiB           1       conn = create_db_engine(db).connect().execution_options(stream_results=True)
+    41    120.9 MiB     43.4 MiB           1       dataframe = pd.read_sql("SELECT * FROM users", conn)
+    42                                         
+    43    120.9 MiB      0.0 MiB           1       logger.info("Got %s records", len(dataframe))
+
+
+[INFO] exec_experiment_4: Execute the experiment#4 with db = mysql, chunksize = 1000
+[INFO] exec_experiment_4: Got 100000 records
+Filename: /usr/src/app/experiments.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    46     74.8 MiB     74.8 MiB           1   @profile
+    47                                         def exec_experiment_4(db: str, chunksize: int):
+    48     74.8 MiB      0.0 MiB           1       logger.info("Execute the experiment#4 with db = %s, chunksize = %s", db, chunksize)
+    49     74.8 MiB      0.0 MiB           1       total = 0
+    50     74.8 MiB      0.0 MiB           1       chunksize = int(chunksize)
+    51                                         
+    52     77.6 MiB      2.8 MiB           1       conn = create_db_engine(db).connect().execution_options(stream_results=True)
+    53     78.0 MiB      0.4 MiB           1       it = pd.read_sql("SELECT * FROM users", conn, chunksize=chunksize)
+    54     80.1 MiB      2.1 MiB         101       for chunk in it:
+    55     80.1 MiB      0.0 MiB         100           total += len(chunk)
+    56                                         
+    57     80.1 MiB      0.0 MiB           1       logger.info("Got %s records", total)
+
+
+[INFO] exec_experiment_1: Execute the experiment#1 with db = postgres
+[INFO] exec_experiment_1: Got 100000 records
+Filename: /usr/src/app/experiments.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    12     74.5 MiB     74.5 MiB           1   @profile
+    13                                         def exec_experiment_1(db: str):
+    14     74.5 MiB      0.0 MiB           1       logger.info("Execute the experiment#1 with db = %s", db)
+    15                                         
+    16     78.8 MiB      4.3 MiB           1       conn = create_db_engine(db).connect()
+    17    147.3 MiB     68.5 MiB           1       dataframe = pd.read_sql("SELECT * FROM users", conn)
+    18                                         
+    19    147.3 MiB      0.0 MiB           1       logger.info("Got %s records", len(dataframe))
+
+
+[INFO] exec_experiment_2: Execute the experiment#2 with db = postgres, chunksize = 1000
+[INFO] exec_experiment_2: Got 100000 records
+Filename: /usr/src/app/experiments.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    22     74.6 MiB     74.6 MiB           1   @profile
+    23                                         def exec_experiment_2(db: str, chunksize: int):
+    24     74.6 MiB      0.0 MiB           1       logger.info("Execute the experiment#2 with db = %s, chunksize = %s", db, chunksize)
+    25     74.6 MiB      0.0 MiB           1       total = 0
+    26     74.6 MiB      0.0 MiB           1       chunksize = int(chunksize)
+    27                                         
+    28     78.9 MiB      4.2 MiB           1       conn = create_db_engine(db).connect()
+    29    108.4 MiB     29.5 MiB           1       it = pd.read_sql("SELECT * FROM users", conn, chunksize=chunksize)
+    30    110.2 MiB      1.4 MiB         101       for chunk in it:
+    31    110.2 MiB      0.0 MiB         100           total += len(chunk)
+    32                                         
+    33    109.8 MiB     -0.5 MiB           1       logger.info("Got %s records", total)
+
+
+[INFO] exec_experiment_3: Execute the experiment#3 with db = postgres
+[INFO] exec_experiment_3: Got 100000 records
+Filename: /usr/src/app/experiments.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    36     74.8 MiB     74.8 MiB           1   @profile
+    37                                         def exec_experiment_3(db: str):
+    38     74.8 MiB      0.0 MiB           1       logger.info("Execute the experiment#3 with db = %s", db)
+    39                                         
+    40     79.0 MiB      4.3 MiB           1       conn = create_db_engine(db).connect().execution_options(stream_results=True)
+    41    150.5 MiB     71.4 MiB           1       dataframe = pd.read_sql("SELECT * FROM users", conn)
+    42                                         
+    43    150.5 MiB      0.0 MiB           1       logger.info("Got %s records", len(dataframe))
+
+
+[INFO] exec_experiment_4: Execute the experiment#4 with db = postgres, chunksize = 1000
+[INFO] exec_experiment_4: Got 100000 records
+Filename: /usr/src/app/experiments.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    46     74.6 MiB     74.6 MiB           1   @profile
+    47                                         def exec_experiment_4(db: str, chunksize: int):
+    48     74.6 MiB      0.0 MiB           1       logger.info("Execute the experiment#4 with db = %s, chunksize = %s", db, chunksize)
+    49     74.6 MiB      0.0 MiB           1       total = 0
+    50     74.6 MiB      0.0 MiB           1       chunksize = int(chunksize)
+    51                                         
+    52     78.9 MiB      4.3 MiB           1       conn = create_db_engine(db).connect().execution_options(stream_results=True)
+    53     80.5 MiB      1.6 MiB           1       it = pd.read_sql("SELECT * FROM users", conn, chunksize=chunksize)
+    54     82.7 MiB      2.2 MiB         101       for chunk in it:
+    55     82.7 MiB      0.0 MiB         100           total += len(chunk)
+    56                                         
+    57     82.7 MiB      0.0 MiB           1       logger.info("Got %s records", total)
+
+
+Container measure-pandas-read-sql-postgres-1  Stopping
+Container measure-pandas-read-sql-mysql-1  Stopping
+Container measure-pandas-read-sql-mysql-1  Stopping
+Container measure-pandas-read-sql-postgres-1  Stopping
+Container measure-pandas-read-sql-postgres-1  Stopped
+Container measure-pandas-read-sql-postgres-1  Removing
+Container measure-pandas-read-sql-postgres-1  Removed
+Container measure-pandas-read-sql-mysql-1  Stopped
+Container measure-pandas-read-sql-mysql-1  Removing
+Container measure-pandas-read-sql-mysql-1  Removed
+Network measure-pandas-read-sql_default  Removing
+Network measure-pandas-read-sql_default  Removed

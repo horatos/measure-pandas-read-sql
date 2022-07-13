@@ -43,6 +43,31 @@ RDBMSとPythonプログラムはそれぞれ別のDockerコンテナで実行す
 
 手順2で使うプログラムは仮説を関数として実装する。このとき、それぞれの関数にはデコレータ`@profile`をつけておくことで行ごとのメモリプロファイルを取得できるようにしておく。各々の関数はinvokeパッケージで起動できるようにしておく。
 
+## 結果
+
+データベースに格納する行数を10万行、chunksizeを1000としたときの実験結果を docs/results-0.txt に保存してある。
+
+実験1のメモリ使用量は`pd.read_sql`のIncrementを採用する。実験記録から使用量はMySQL 8が45.9 MiB、PostgreSQLが68.5 MiBである。
+
+実験2のメモリ使用量は`pd.read_sql`と`for chunk in it`のIncrementの合計を採用する。実験記録から使用量はMySQL 8が40.6 MiB、PostgreSQLが30.9 MiBである。
+
+実験3のメモリ使用量は、実験1と同様に、`pd.read_sql`のIncrementを採用する。実験記録から使用量はMySQL 8が43.4 MiB、PostgreSQLが71.4 MiBである。
+
+実験4のメモリ使用量は`pd.read_sql`と`for chunk in it`のIncrementの合計を採用する。実験記録から使用量はMySQL 8が2.5 MiB、PostgreSQLが3.8 MiBである。
+
+|        | MySQL 8  | PostgreSQL |
+|:------:|---------:|-----------:|
+| 実験1  | 45.9 MiB |   68.5 MiB |
+| 実験2  | 40.6 MiB |   30.9 MiB |
+| 実験3  | 43.4 MiB |   71.4 MiB |
+| 実験4  |  2.5 MiB |    3.8 MiB |
+
+## 議論
+
+予想に反してMySQLでもPostgreSQLでも共にサーバーサイドカーソルが利用できることがわかった。
+
+MySQL 8であることが要因かもしれない。また、PyMySQLが対応しているだけかもしれない。
+
 ## 参考文献
 
 [^1]: [Loading SQL data into Pandas without running out of memory](https://pythonspeed.com/articles/pandas-sql-chunking/)
