@@ -42,5 +42,10 @@ def exp2(c, db, chunksize):
     exec_experiment_2(db, chunksize)
 
 
+@task
+def exp3(c, db):
+    exec_experiment_3(db)
+
+
 if __name__ == '__main__':
     check_connection()

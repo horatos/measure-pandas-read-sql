@@ -19,6 +19,7 @@ function do_exps () {
 	DB=$1
 	$APP exp1 --db $DB || die
 	$APP exp2 --db $DB --chunksize $CHUNKSIZE || die
+	$APP exp3 --db $DB || die
 }
 
 docker compose build
