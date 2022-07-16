@@ -1,7 +1,10 @@
 # `pandas.DataFrame.read_sql`が使用するメモリサイズを測定する
 
-このリポジトリにはPythonのライブラリであるpandasの`DataFrame.read_sql`メソッドが使用するメモリのサイズをいくつかの条件で測定するプログラムがある。
-測定に使うRDBMSはMySQLとPostgreSQLの2つ、SQLAlchemyの`stream_results`フラグの値が`True`と`False`の2つの場合、`read_sql`の`chunksize`引数を渡す場合と渡さない場合の2つにについて測定を行う。
+このリポジトリには、Pythonのライブラリであるpandasの`DataFrame.read_sql`メソッドが使用するメモリのサイズを、いくつかの条件で測定するプログラムがある。
+このプログラムを書いた理由は、pandasはMySQLを利用する場合にサーバーサイドカーソルを有効にできずメモリ使用量を削減できないという情報があり、このことを検証したいからである。
+
+測定に使うRDBMSはMySQL 8とMySQL 5.7とPostgreSQLの3つである。
+SQLAlchemyの`execution_options`に`stream_results=True`を渡す場合と`execution_options`を呼ばない場合、`read_sql`の`chunksize`引数を渡す場合と渡さない場合を組み合わせた全部で4通りの条件で測定を行う。
 
 実験の結果ではどのRDBMSでも`execution_options(stream_results=True)`を呼び、`DataFrame.read_sql`に`chunksize`を渡した場合には、消費メモリ量が減少した。したがって、`pandas`でサーバーサイドカーソルが利用できると思われる。
 
@@ -43,6 +46,17 @@ RDBMSとPythonプログラムはそれぞれ別のDockerコンテナで実行す
 
 手順2で使うプログラムは仮説を関数として実装する。このとき、それぞれの関数にはデコレータ`@profile`をつけておくことで行ごとのメモリプロファイルを取得できるようにしておく。各々の関数はinvokeパッケージで起動できるようにしておく。
 
+これらの手順を *./app* 以下のPythonプログラムに実装した。また、*run.sh* を実行することですべての実験が実行される。
+
+実験に用いたライブラリのバージョンは以下のとおりである。
+
+| ライブラリ      | バージョン|
+|:----------------|:----------|
+| pandas          | 1.4.3     |
+| sqlalchemy      | 1.4.39    |
+| PyMySQL         | 1.0.2     |
+| psycopg2-binary | 2.9.3     |
+
 ## 結果
 
 データベースに格納する行数を10万行、chunksizeを1000としたときの実験結果を docs/results-1.txt に保存してある。
@@ -80,7 +94,7 @@ pandas-dev/pandas#12265 の報告は2016年になされたものなので、2022
 ## 結論
 
 `pandas`で`DataFrame.read_sql`を呼ぶ際に、適切な設定を行えばサーバーサイドカーソルの利用が可能になりメモリ使用量が抑えられる。
-Issue pandas-dev/pandas#12265は古い情報であり、SQLドライバのアップデートによりMySQLでもサーバーサイドカーソルが利用できるようになったと思われる。
+Issue pandas-dev/pandas#12265 は古い情報であり、SQLドライバのアップデートによりMySQLでもサーバーサイドカーソルが利用できるようになったと思われる。
 
 [^1]: [Loading SQL data into Pandas without running out of memory](https://pythonspeed.com/articles/pandas-sql-chunking/)
 
