@@ -3,7 +3,7 @@
 このリポジトリにはPythonのライブラリであるpandasの`DataFrame.read_sql`メソッドが使用するメモリのサイズをいくつかの条件で測定するプログラムがある。
 測定に使うRDBMSはMySQLとPostgreSQLの2つ、SQLAlchemyの`stream_results`フラグの値が`True`と`False`の2つの場合、`read_sql`の`chunksize`引数を渡す場合と渡さない場合の2つにについて測定を行う。
 
-<!-- 得られた結果を書く -->
+実験の結果ではどのRDBMSでも`execution_options(stream_results=True)`を呼び、`DataFrame.read_sql`に`chunksize`を渡した場合には、消費メモリ量が減少した。したがって、`pandas`でサーバーサイドカーソルが利用できると思われる。
 
 ## 背景
 
@@ -77,7 +77,10 @@ pandas-dev/pandas#12265 の報告は2016年になされたものなので、2022
 
 すべての行を一度に読み込む動作になっている実験1と実験3においてPostgreSQLを利用した場合に消費するメモリが約70 MiBと、MySQLのそれに比べ2倍近くになっている。詳細を調べていないのでこの原因はわからない。
 
-## 参考文献
+## 結論
+
+`pandas`で`DataFrame.read_sql`を呼ぶ際に、適切な設定を行えばサーバーサイドカーソルの利用が可能になりメモリ使用量が抑えられる。
+Issue pandas-dev/pandas#12265は古い情報であり、SQLドライバのアップデートによりMySQLでもサーバーサイドカーソルが利用できるようになったと思われる。
 
 [^1]: [Loading SQL data into Pandas without running out of memory](https://pythonspeed.com/articles/pandas-sql-chunking/)
 
